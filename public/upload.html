@@ -35,7 +35,11 @@
   </div>
 </nav>
 <div class="container mt-3">
- 
+  <input type="text" class="form-control mt-2" id="title" placeholder="title">
+  <textarea class="form-control mt-2" id="content"></textarea>
+  <input type="text" class="form-control mt-2" id="price" placeholder="price">
+  <input class="form-control mt-2" type="file" id="image">
+  <button class="btn btn-danger mt-3" id="send">올리기</button>
 </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
@@ -60,21 +64,28 @@
   </script>
   <script>
   const db = firebase.firestore();
-  db.collection('product').get().then((결과)=> {
-  결과.forEach((doc)=> {
-   console.log(doc.data());
-      var 템플릿 = `<div class="product">
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
-      <div class="flex-grow-1 p-4">
-        <h5 class="title">${doc.data().제목}</h5>
-        <p class="date">2030년 1월 8일</p>
-        <p class="price">${doc.data().가격}</p>
-        <p class="float-end">🤍0</p>
-      </div>
-      </div>`;
-      $('.container').append(템플릿)
-  });
-  });
+  const storage = firebase.storage();
+  $('#send').click(function(){
+
+  var file = document.querySelector('#image').files[0];
+  var storageRef = storage.ref();
+  var 저장할경로 = storageRef.child('image/' + file.name);
+  var 업로드작업 = 저장할경로.put(file);
+  
+  var 저장할거 = { 
+  제목: $('#title').val(),
+  가격: $('#price').val(),
+  내용: $('#content').val(),
+  날짜: new Date(),
+  };
+    db.collection('product').add(저장할거).then((result)=> {
+      console.log(result);
+      window.location.href ="/index.html"
+    }).catch((err)=> {
+      console.log(err);
+    })
+  })
+  
 
   </script>
 </body>
